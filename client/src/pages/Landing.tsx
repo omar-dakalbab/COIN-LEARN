@@ -32,7 +32,7 @@ export default function Landing() {
           </div>
           <span className="text-2xl font-display font-bold">FinLit</span>
         </div>
-        <Link href="/api/login">
+        <Link href="/login">
           <Button variant="outline" className="font-semibold">Log In</Button>
         </Link>
       </nav>
@@ -67,7 +67,7 @@ export default function Landing() {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="flex flex-col sm:flex-row gap-4"
           >
-            <Link href="/api/login">
+            <Link href="/login">
               <Button size="lg" className="h-14 px-8 text-lg rounded-2xl shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 transition-all hover:-translate-y-1">
                 Start Learning Free
                 <ArrowRight className="ml-2 w-5 h-5" />

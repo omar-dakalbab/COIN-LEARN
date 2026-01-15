@@ -1,11 +1,13 @@
 import { useAuth } from "@/hooks/use-auth";
-import { useCourses } from "@/hooks/use-courses";
+import { useCourses, useCourse } from "@/hooks/use-courses";
 import { useProgress } from "@/hooks/use-progress";
 import { CourseCard } from "@/components/CourseCard";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Trophy, Flame, Target } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import type { Course } from "@shared/schema";
+import type { ProgressResponse } from "@shared/routes";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -87,28 +89,52 @@ export default function Dashboard() {
         
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses?.sort((a, b) => a.order - b.order).map((course, idx) => {
-            // Calculate progress for this course
-            // Ideally backend would provide this, but we can compute client-side with full data
-            // For now, mocking random progress based on course ID for visual demo
-            // In real app: filter progress by lessonIds belonging to this course
-            const mockProgress = idx === 0 ? 65 : idx === 1 ? 30 : 0; 
-            
             return (
-              <motion.div
-                key={course.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <CourseCard 
-                  course={course} 
-                  progressPercent={mockProgress} 
-                />
-              </motion.div>
+              <CourseProgressCard key={course.id} course={course} progress={progress} idx={idx} />
             );
           })}
         </div>
       </div>
     </div>
+  );
+}
+
+function CourseProgressCard({ 
+  course, 
+  progress, 
+  idx 
+}: { 
+  course: Course; 
+  progress: ProgressResponse[] | undefined; 
+  idx: number;
+}) {
+  const { data: courseDetails } = useCourse(course.id);
+  
+  // Calculate progress percentage
+  let progressPercent = 0;
+  if (courseDetails && progress) {
+    const allLessonIds = courseDetails.modules.flatMap(module => 
+      module.lessons.map(lesson => lesson.id)
+    );
+    const completedLessonIds = new Set(
+      progress.filter(p => p.completed).map(p => p.lessonId)
+    );
+    const completedCount = allLessonIds.filter(id => completedLessonIds.has(id)).length;
+    progressPercent = allLessonIds.length > 0 
+      ? (completedCount / allLessonIds.length) * 100 
+      : 0;
+  }
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: idx * 0.1 }}
+    >
+      <CourseCard 
+        course={course} 
+        progressPercent={progressPercent} 
+      />
+    </motion.div>
   );
 }

@@ -13,6 +13,7 @@ import Dashboard from "@/pages/Dashboard";
 import CourseDetail from "@/pages/CourseDetail";
 import LessonView from "@/pages/LessonView";
 import Profile from "@/pages/Profile";
+import Login from "@/pages/Login";
 import NotFound from "@/pages/NotFound";
 import { Loader2 } from "lucide-react";
 
@@ -53,6 +54,10 @@ function Router() {
         <Switch>
           <Route path="/">
             {user ? <Dashboard /> : <Landing />}
+          </Route>
+          
+          <Route path="/login">
+            <Login />
           </Route>
           
           <Route path="/dashboard">

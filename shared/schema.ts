@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, jsonb, unique } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
@@ -48,7 +48,9 @@ export const userProgress = pgTable("user_progress", {
   completed: boolean("completed").default(false),
   score: integer("score"), // For quizzes
   completedAt: timestamp("completed_at").defaultNow(),
-});
+}, (table) => ({
+  uniqueUserLesson: unique().on(table.userId, table.lessonId),
+}));
 
 // === RELATIONS ===
 
